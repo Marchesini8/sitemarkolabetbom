@@ -7,7 +7,7 @@ Projeto pronto para deploy no Railway usando Node.js e Express.
 1. Crie um novo projeto no Railway a partir deste repositorio do GitHub.
 2. Em `Variables`, cadastre as variaveis de ambiente abaixo.
 3. O Railway deve usar automaticamente:
-   - Build: Nixpacks
+   - Build: Railpack
    - Start command: `npm start`
    - Healthcheck: `/health`
 
