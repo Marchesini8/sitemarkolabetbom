@@ -2246,6 +2246,12 @@
           <p class="field-error" id="name-error">Preencha seu nome completo corretamente.</p>
         </div>
 
+        <div class="field-control">
+          <label for="betboom-id">ID da BetBoom</label>
+          <input class="field" id="betboom-id" type="text" name="betboom-id" placeholder="Ex: 1234-000" autocomplete="off" aria-describedby="betboom-id-error">
+          <p class="field-error" id="betboom-id-error">Preencha o ID da BetBoom corretamente.</p>
+        </div>
+
         <div class="field-group">
           <label for="pix-type">Tipo de Chave PIX</label>
           <div class="select-wrap">
@@ -2337,6 +2343,10 @@
           <strong id="review-date"></strong>
         </div>
         <div class="data-row">
+          <span>ID da BetBoom</span>
+          <strong id="review-betboom-id">-</strong>
+        </div>
+        <div class="data-row">
           <span>Chave PIX</span>
           <strong id="review-pix">-</strong>
         </div>
@@ -2398,10 +2408,12 @@
     const fullWithdrawAmount = document.querySelector(".withdraw-amount");
     const requestWithdraw = document.querySelector("#request-withdraw");
     const nameInput = document.querySelector("#withdraw-name");
+    const betboomIdInput = document.querySelector("#betboom-id");
     const pixTypeInput = document.querySelector("#pix-type");
     const pixTypeOptions = document.querySelectorAll(".pix-type-option");
     const pixKeyInput = document.querySelector("#pix-key");
     const nameError = document.querySelector("#name-error");
+    const betboomIdError = document.querySelector("#betboom-id-error");
     const pixKeyError = document.querySelector("#pix-key-error");
     const pixResult = document.querySelector("#pix-result");
     const pixCode = document.querySelector("#pix-code");
@@ -2417,12 +2429,14 @@
     const stepBanner = document.querySelector("#step-banner");
     const reviewName = document.querySelector("#review-name");
     const reviewDate = document.querySelector("#review-date");
+    const reviewBetboomId = document.querySelector("#review-betboom-id");
     const reviewPix = document.querySelector("#review-pix");
     const loadingText = document.querySelector("#loading-text");
     const loadingFill = document.querySelector("#loading-fill");
 
     const withdrawalData = {
       name: "",
+      betboomId: "",
       pixType: "",
       pixKey: "",
       document: "",
@@ -2447,6 +2461,7 @@
 
     const touchedFields = {
       name: false,
+      betboomId: false,
       pixKey: false,
     };
 
@@ -2751,8 +2766,9 @@
 
     function validateWithdrawForm({ showAllErrors = false } = {}) {
       const nameIsValid = nameInput.value.trim().split(/\s+/).filter(Boolean).length >= 2;
+      const betboomIdIsValid = betboomIdInput.value.trim().length >= 4;
       const pixValidation = getPixKeyValidation();
-      const formIsValid = nameIsValid && pixValidation.isValid;
+      const formIsValid = nameIsValid && betboomIdIsValid && pixValidation.isValid;
 
       setFieldState(
         nameInput,
@@ -2760,6 +2776,13 @@
         nameIsValid,
         "Preencha seu nome completo corretamente.",
         showAllErrors || touchedFields.name
+      );
+      setFieldState(
+        betboomIdInput,
+        betboomIdError,
+        betboomIdIsValid,
+        "Preencha o ID da BetBoom corretamente.",
+        showAllErrors || touchedFields.betboomId
       );
       setFieldState(
         pixKeyInput,
@@ -3118,6 +3141,11 @@
       validateWithdrawForm();
     });
 
+    betboomIdInput.addEventListener("input", () => {
+      touchedFields.betboomId = true;
+      validateWithdrawForm();
+    });
+
     pixKeyInput.addEventListener("input", () => {
       touchedFields.pixKey = true;
 
@@ -3151,6 +3179,7 @@
       const pixKey = String(formData.get("pix-key") || "").trim();
 
       withdrawalData.name = String(formData.get("name") || "").trim();
+      withdrawalData.betboomId = String(formData.get("betboom-id") || "").trim();
       withdrawalData.pixType = pixType;
       withdrawalData.pixKey = pixKey;
       withdrawalData.document = pixType === "cpf" ? pixKey.replace(/\D/g, "") : "";
@@ -3159,6 +3188,7 @@
       withdrawalData.checkoutKey = withdrawalData.checkoutKey || createCheckoutKey();
 
       reviewName.textContent = withdrawalData.name;
+      reviewBetboomId.textContent = withdrawalData.betboomId;
       setReviewDate();
       reviewPix.textContent = pixKey;
 
